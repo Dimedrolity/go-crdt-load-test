@@ -3,6 +3,7 @@ package loader
 
 import (
 	"go-crdt-load-test/client"
+	"go-crdt-load-test/report"
 	"go-crdt-load-test/schedule"
 	"time"
 )
@@ -21,12 +22,9 @@ func NewLoader(config Config, scheduler schedule.Scheduler[string]) *Loader {
 	}
 }
 
-const IncOperation = "INC"
-const CountOperation = "COUNT"
+func (l *Loader) Load() (report.Report, error) {
 
-func (l *Loader) Load() (Report, error) {
-
-	var report Report
+	var rep report.Report
 
 	for i := 0; i < l.config.CountsCount; i++ {
 		for j := 0; j < l.config.IncsPerCountCall; j++ {
@@ -40,12 +38,12 @@ func (l *Loader) Load() (Report, error) {
 
 			finish := time.Now()
 			delta := finish.Sub(start)
-			reportItem := ReportItem{
-				Operation:    IncOperation,
+			reportItem := report.Item{
+				Operation:    report.IncOperation,
 				Address:      address,
 				ResponseTime: delta,
 			}
-			report = append(report, reportItem)
+			rep = append(rep, reportItem)
 		}
 
 		address := l.scheduler.Next()
@@ -57,13 +55,13 @@ func (l *Loader) Load() (Report, error) {
 		finish := time.Now()
 		delta := finish.Sub(start) // TODO refactor time.Since()
 
-		reportItem := ReportItem{
-			Operation:    CountOperation,
+		reportItem := report.Item{
+			Operation:    report.CountOperation,
 			Address:      address,
 			ResponseTime: delta,
 		}
-		report = append(report, reportItem)
+		rep = append(rep, reportItem)
 	}
 
-	return report, nil
+	return rep, nil
 }

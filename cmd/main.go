@@ -1,18 +1,13 @@
-package loader_test
+package main
 
 import (
-	"github.com/stretchr/testify/assert"
-	"go-crdt-load-test/client"
-	"go-crdt-load-test/report"
-	"testing"
-
 	"go-crdt-load-test/loader"
+	"go-crdt-load-test/report"
 	"go-crdt-load-test/schedule"
+	"log"
 )
 
-// TestLoad is E2E test
-// TODO write unit tests
-func TestLoad(t *testing.T) {
+func main() {
 	// Call 9 Increments and 1 Count, 10 times.
 	// 9*10 = 90 is a total Increments counts.
 	// 1*10 = 10 is a total Count calls count.
@@ -27,13 +22,12 @@ func TestLoad(t *testing.T) {
 		"http://localhost:8002",
 	})
 	l := loader.NewLoader(loaderConfig, rr)
-
 	rep, err := l.Load()
-	assert.Nil(t, err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = report.WriteToFile(rep, "report.txt")
-	assert.Nil(t, err)
-
-	count, err := client.GetCount("http://localhost:8002")
-	assert.Nil(t, err)
-	assert.Equal(t, 90, count)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

@@ -1,14 +1,17 @@
-package loader
+package report
 
 import "time"
 
-type ReportItem struct {
+const IncOperation = "INC"
+const CountOperation = "COUNT"
+
+type Item struct {
 	Operation    string
 	Address      string
 	ResponseTime time.Duration
 }
 
-type Report []ReportItem
+type Report []Item
 
 func (r Report) CalcAverage() int64 {
 	var sum int64
