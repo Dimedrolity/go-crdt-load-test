@@ -8,10 +8,8 @@ import (
 	"strconv"
 )
 
-// TODO specify host and port
-
-func GetCount() (int, error) {
-	resp, err := http.Get("http://localhost:8001/gcounter/count")
+func GetCount(address string) (int, error) {
+	resp, err := http.Get(address + "/gcounter/count")
 	if err != nil {
 		return 0, err
 	}
@@ -29,8 +27,8 @@ func GetCount() (int, error) {
 	return intNumber, nil
 }
 
-func Inc() error {
-	resp, err := http.Get("http://localhost:8001/gcounter/increment")
+func Inc(address string) error {
+	resp, err := http.Get(address + "/gcounter/increment")
 	if err != nil {
 		return err
 	}
