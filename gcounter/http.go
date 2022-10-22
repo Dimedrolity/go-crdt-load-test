@@ -1,5 +1,4 @@
-// Package client is HTTP-client for CRDT GCounters
-package client
+package gcounter
 
 import (
 	"bytes"
@@ -8,7 +7,12 @@ import (
 	"strconv"
 )
 
-func GetCount(address string) (int, error) {
+// Http is GCounter implementation that use HTTP requests to use counter https://github.com/Dimedrolity/gcounter-crdt.
+// The zero value is ready to use.
+type Http struct{}
+
+// GetCount gets actual counter value synchronized with all nodes.
+func (Http) GetCount(address string) (int, error) {
 	resp, err := http.Get(address + "/gcounter/count")
 	if err != nil {
 		return 0, err
@@ -27,7 +31,8 @@ func GetCount(address string) (int, error) {
 	return intNumber, nil
 }
 
-func Inc(address string) error {
+// Inc increments counter value on one node.
+func (Http) Inc(address string) error {
 	resp, err := http.Get(address + "/gcounter/increment")
 	if err != nil {
 		return err

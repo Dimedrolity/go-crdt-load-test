@@ -2,7 +2,7 @@ package loader_test
 
 import (
 	"github.com/stretchr/testify/assert"
-	"go-crdt-load-test/client"
+	"go-crdt-load-test/gcounter"
 	"go-crdt-load-test/report"
 	"go-crdt-load-test/statistic"
 	"testing"
@@ -27,7 +27,8 @@ func TestLoad(t *testing.T) {
 		"http://localhost:8001",
 		"http://localhost:8002",
 	})
-	l := loader.NewLoader(loaderConfig, rr)
+	httpCounter := gcounter.Http{}
+	l := loader.NewLoader(loaderConfig, httpCounter, rr)
 
 	responseSeries, err := l.Load()
 	assert.Nil(t, err)
@@ -42,7 +43,9 @@ func TestLoad(t *testing.T) {
 	err = report.WriteStatsToFile(countStats, "count.txt")
 	assert.Nil(t, err)
 
-	count, err := client.GetCount("http://localhost:8002")
+	count, err := httpCounter.GetCount("http://localhost:8002")
 	assert.Nil(t, err)
 	assert.Equal(t, 90, count)
 }
+
+// TODO unit test with stub loader.Loader.counter

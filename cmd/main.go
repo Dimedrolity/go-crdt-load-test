@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-crdt-load-test/gcounter"
 	"go-crdt-load-test/loader"
 	"go-crdt-load-test/report"
 	"go-crdt-load-test/schedule"
@@ -27,8 +28,8 @@ func main() {
 		"http://localhost:8001",
 		"http://localhost:8002",
 	})
-
-	l := loader.NewLoader(loaderConfig, rr)
+	httpCounter := gcounter.Http{}
+	l := loader.NewLoader(loaderConfig, httpCounter, rr)
 	responseSeries, err := l.Load()
 	if err != nil {
 		log.Fatal(err)

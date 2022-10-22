@@ -1,23 +1,23 @@
-// Package loader loads GCounters using client and schedule packages.
+// Package loader loads GCounter using gcounter and schedule packages.
 package loader
 
 import (
-	"go-crdt-load-test/client"
+	"go-crdt-load-test/gcounter"
 	"go-crdt-load-test/report"
 	"go-crdt-load-test/schedule"
 	"time"
 )
 
 type Loader struct {
-	// TODO use client as dependency
-	//client
 	config    Config
+	counter   gcounter.GCounter
 	scheduler schedule.Scheduler[string]
 }
 
-func NewLoader(config Config, scheduler schedule.Scheduler[string]) *Loader {
+func NewLoader(config Config, counter gcounter.GCounter, scheduler schedule.Scheduler[string]) *Loader {
 	return &Loader{
 		config:    config,
+		counter:   counter,
 		scheduler: scheduler,
 	}
 }
@@ -30,7 +30,7 @@ func (l *Loader) Load() (report.ResponseSeries, error) {
 			address := l.scheduler.Next()
 
 			start := time.Now()
-			err := client.Inc(address)
+			err := l.counter.Inc(address)
 			if err != nil {
 				return nil, err
 			}
@@ -47,7 +47,7 @@ func (l *Loader) Load() (report.ResponseSeries, error) {
 
 		address := l.scheduler.Next()
 		start := time.Now()
-		_, err := client.GetCount(address)
+		_, err := l.counter.GetCount(address)
 		if err != nil {
 			return nil, err
 		}
