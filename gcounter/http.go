@@ -9,11 +9,19 @@ import (
 
 // Http is GCounter implementation that use HTTP requests to use counter https://github.com/Dimedrolity/gcounter-crdt.
 // The zero value is ready to use.
-type Http struct{}
+type Http struct {
+	address string
+}
+
+func NewHttp(address string) *Http {
+	return &Http{
+		address,
+	}
+}
 
 // GetCount gets actual counter value synchronized with all nodes.
-func (Http) GetCount(address string) (int, error) {
-	resp, err := http.Get(address + "/gcounter/count")
+func (h *Http) GetCount() (int, error) {
+	resp, err := http.Get(h.address + "/gcounter/count")
 	if err != nil {
 		return 0, err
 	}
@@ -32,12 +40,16 @@ func (Http) GetCount(address string) (int, error) {
 }
 
 // Inc increments counter value on one node.
-func (Http) Inc(address string) error {
-	resp, err := http.Get(address + "/gcounter/increment")
+func (h *Http) Inc() error {
+	resp, err := http.Get(h.address + "/gcounter/increment")
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
 	return nil
+}
+
+func (h *Http) Name() string {
+	return h.address
 }

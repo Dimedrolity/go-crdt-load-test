@@ -23,13 +23,13 @@ func main() {
 	}
 
 	// TODO move addresses to config
-	rr := schedule.NewRoundRobin([]string{
-		"http://localhost:8000",
-		"http://localhost:8001",
-		"http://localhost:8002",
+	rr := schedule.NewRoundRobin([]gcounter.GCounter{
+		gcounter.NewHttp("http://localhost:8000"),
+		gcounter.NewHttp("http://localhost:8001"),
+		gcounter.NewHttp("http://localhost:8002"),
 	})
-	httpCounter := gcounter.Http{}
-	l := loader.NewLoader(loaderConfig, httpCounter, rr)
+	// TODO move all logic from main to don't repeat in E2E test
+	l := loader.NewLoader(loaderConfig, rr)
 	responseSeries, err := l.Load()
 	if err != nil {
 		log.Fatal(err)

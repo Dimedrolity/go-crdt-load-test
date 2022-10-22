@@ -11,13 +11,12 @@ import (
 type Loader struct {
 	config    Config
 	counter   gcounter.GCounter
-	scheduler schedule.Scheduler[string]
+	scheduler schedule.Scheduler[gcounter.GCounter]
 }
 
-func NewLoader(config Config, counter gcounter.GCounter, scheduler schedule.Scheduler[string]) *Loader {
+func NewLoader(config Config, scheduler schedule.Scheduler[gcounter.GCounter]) *Loader {
 	return &Loader{
 		config:    config,
-		counter:   counter,
 		scheduler: scheduler,
 	}
 }
@@ -27,10 +26,10 @@ func (l *Loader) Load() (report.ResponseSeries, error) {
 
 	for i := 0; i < l.config.CountsCount; i++ {
 		for j := 0; j < l.config.IncsPerCountCall; j++ {
-			address := l.scheduler.Next()
+			counter := l.scheduler.Next()
 
 			start := time.Now()
-			err := l.counter.Inc(address)
+			err := counter.Inc()
 			if err != nil {
 				return nil, err
 			}
@@ -39,15 +38,15 @@ func (l *Loader) Load() (report.ResponseSeries, error) {
 			delta := finish.Sub(start)
 			reportItem := report.Response{
 				Operation: report.OperationInc,
-				Address:   address,
+				Address:   counter.Name(),
 				Time:      delta,
 			}
 			rep = append(rep, reportItem)
 		}
 
-		address := l.scheduler.Next()
+		counter := l.scheduler.Next()
 		start := time.Now()
-		_, err := l.counter.GetCount(address)
+		_, err := counter.GetCount()
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +54,7 @@ func (l *Loader) Load() (report.ResponseSeries, error) {
 
 		reportItem := report.Response{
 			Operation: report.OperationCount,
-			Address:   address,
+			Address:   counter.Name(),
 			Time:      delta,
 		}
 		rep = append(rep, reportItem)

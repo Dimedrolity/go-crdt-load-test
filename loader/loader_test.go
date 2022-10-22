@@ -14,6 +14,8 @@ import (
 // TestLoad is E2E test
 // TODO write unit tests
 func TestLoad(t *testing.T) {
+	// TODO move all logic from test to don't repeat in main.go
+
 	// Call 9 Increments and 1 Count, 10 times.
 	// 9*10 = 90 is a total Increments counts.
 	// 1*10 = 10 is a total Count calls count.
@@ -22,13 +24,12 @@ func TestLoad(t *testing.T) {
 		CountsCount:      10,
 		IncsPerCountCall: 9,
 	}
-	rr := schedule.NewRoundRobin([]string{
-		"http://localhost:8000",
-		"http://localhost:8001",
-		"http://localhost:8002",
+	rr := schedule.NewRoundRobin([]gcounter.GCounter{
+		gcounter.NewHttp("http://localhost:8000"),
+		gcounter.NewHttp("http://localhost:8001"),
+		gcounter.NewHttp("http://localhost:8002"),
 	})
-	httpCounter := gcounter.Http{}
-	l := loader.NewLoader(loaderConfig, httpCounter, rr)
+	l := loader.NewLoader(loaderConfig, rr)
 
 	responseSeries, err := l.Load()
 	assert.Nil(t, err)
@@ -43,7 +44,7 @@ func TestLoad(t *testing.T) {
 	err = report.WriteStatsToFile(countStats, "count.txt")
 	assert.Nil(t, err)
 
-	count, err := httpCounter.GetCount("http://localhost:8002")
+	count, err := rr.Next().GetCount()
 	assert.Nil(t, err)
 	assert.Equal(t, 90, count)
 }

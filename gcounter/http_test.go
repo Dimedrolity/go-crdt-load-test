@@ -13,12 +13,12 @@ const address = "http://localhost:8001"
 // TODO write unit tests. Now it is integration tests
 
 func TestGetCount(t *testing.T) {
-	count, err := gcounter.Http{}.GetCount(address)
+	count, err := gcounter.NewHttp(address).GetCount()
 	assert.Nil(t, err)
 	assert.Equal(t, 1, count)
 }
 
 func TestInc(t *testing.T) {
-	err := gcounter.Http{}.Inc(address)
+	err := gcounter.NewHttp(address).Inc()
 	assert.Nil(t, err)
 }
