@@ -1,13 +1,13 @@
 package main
 
 import (
-	"gopkg.in/yaml.v3"
-	"io/ioutil"
-	"log"
-
 	"go-crdt-load-test/loader"
 	"go-crdt-load-test/report"
 	"go-crdt-load-test/schedule"
+	"go-crdt-load-test/statistic"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
+	"log"
 )
 
 func main() {
@@ -34,7 +34,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = report.WriteToFile(responseSeries, "report.txt")
+	err = report.WriteSeriesToFile(responseSeries, "report.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	incStats := statistic.CalcIncStats(responseSeries)
+	err = report.WriteStatsToFile(incStats, "inc.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	countStats := statistic.CalcCountStats(responseSeries)
+	err = report.WriteStatsToFile(countStats, "count.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

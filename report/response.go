@@ -31,13 +31,12 @@ func (series ResponseSeries) String() string {
 	return builder.String()
 }
 
-func (series ResponseSeries) CalcAverage() int64 {
-	var sum int64
-
+func (series ResponseSeries) FilterByOperation(op Operation) ResponseSeries {
+	var result ResponseSeries
 	for _, item := range series {
-		sum += item.Time.Microseconds()
+		if item.Operation == op {
+			result = append(result, item)
+		}
 	}
-
-	avg := sum / int64(len(series))
-	return avg
+	return result
 }

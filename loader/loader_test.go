@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go-crdt-load-test/client"
 	"go-crdt-load-test/report"
+	"go-crdt-load-test/statistic"
 	"testing"
 
 	"go-crdt-load-test/loader"
@@ -28,9 +29,17 @@ func TestLoad(t *testing.T) {
 	})
 	l := loader.NewLoader(loaderConfig, rr)
 
-	rep, err := l.Load()
+	responseSeries, err := l.Load()
 	assert.Nil(t, err)
-	err = report.WriteToFile(rep, "report.txt")
+	err = report.WriteSeriesToFile(responseSeries, "report.txt")
+	assert.Nil(t, err)
+
+	incStats := statistic.CalcIncStats(responseSeries)
+	err = report.WriteStatsToFile(incStats, "inc.txt")
+	assert.Nil(t, err)
+
+	countStats := statistic.CalcCountStats(responseSeries)
+	err = report.WriteStatsToFile(countStats, "count.txt")
 	assert.Nil(t, err)
 
 	count, err := client.GetCount("http://localhost:8002")
