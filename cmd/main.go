@@ -29,12 +29,12 @@ func main() {
 	})
 
 	l := loader.NewLoader(loaderConfig, rr)
-	rep, err := l.Load()
+	responseSeries, err := l.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = report.WriteToFile(rep, "report.txt")
+	err = report.WriteToFile(responseSeries, "report.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

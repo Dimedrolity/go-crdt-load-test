@@ -1,25 +1,43 @@
 package report
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
-const IncOperation = "INC"
-const CountOperation = "COUNT"
+type Operation string
 
-type Item struct {
-	Operation    string
-	Address      string
-	ResponseTime time.Duration
+const OperationInc Operation = "INC"
+const OperationCount Operation = "COUNT"
+
+type Response struct {
+	Operation Operation
+	Address   string
+	Time      time.Duration
 }
 
-type Report []Item
+func (item *Response) String() string {
+	return fmt.Sprintf("%s: %s %s", item.Operation, item.Address, item.Time)
+}
 
-func (r Report) CalcAverage() int64 {
+type ResponseSeries []Response
+
+func (series ResponseSeries) String() string {
+	builder := strings.Builder{}
+	for _, item := range series {
+		builder.WriteString(item.String() + "\n")
+	}
+	return builder.String()
+}
+
+func (series ResponseSeries) CalcAverage() int64 {
 	var sum int64
 
-	for _, item := range r {
-		sum += item.ResponseTime.Microseconds()
+	for _, item := range series {
+		sum += item.Time.Microseconds()
 	}
 
-	avg := sum / int64(len(r))
+	avg := sum / int64(len(series))
 	return avg
 }

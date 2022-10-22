@@ -22,9 +22,8 @@ func NewLoader(config Config, scheduler schedule.Scheduler[string]) *Loader {
 	}
 }
 
-func (l *Loader) Load() (report.Report, error) {
-
-	var rep report.Report
+func (l *Loader) Load() (report.ResponseSeries, error) {
+	var rep report.ResponseSeries
 
 	for i := 0; i < l.config.CountsCount; i++ {
 		for j := 0; j < l.config.IncsPerCountCall; j++ {
@@ -38,10 +37,10 @@ func (l *Loader) Load() (report.Report, error) {
 
 			finish := time.Now()
 			delta := finish.Sub(start)
-			reportItem := report.Item{
-				Operation:    report.IncOperation,
-				Address:      address,
-				ResponseTime: delta,
+			reportItem := report.Response{
+				Operation: report.OperationInc,
+				Address:   address,
+				Time:      delta,
 			}
 			rep = append(rep, reportItem)
 		}
@@ -52,13 +51,12 @@ func (l *Loader) Load() (report.Report, error) {
 		if err != nil {
 			return nil, err
 		}
-		finish := time.Now()
-		delta := finish.Sub(start) // TODO refactor time.Since()
+		delta := time.Since(start)
 
-		reportItem := report.Item{
-			Operation:    report.CountOperation,
-			Address:      address,
-			ResponseTime: delta,
+		reportItem := report.Response{
+			Operation: report.OperationCount,
+			Address:   address,
+			Time:      delta,
 		}
 		rep = append(rep, reportItem)
 	}
