@@ -1,0 +1,5 @@
+Operation: INC
+Mean: 1400
+P25: 996
+Median: 1186
+P75: 1577
