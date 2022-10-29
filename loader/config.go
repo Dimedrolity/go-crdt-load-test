@@ -8,4 +8,6 @@ package loader
 type Config struct {
 	CountsCount      int `yaml:"counts_count"`
 	IncsPerCountCall int `yaml:"incs_per_count_call"`
+	StartPort        int `yaml:"start_port"`
+	EndPort          int `yaml:"end_port"`
 }

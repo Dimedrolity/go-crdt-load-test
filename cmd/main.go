@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
+	"strconv"
 )
 
 func main() {
@@ -23,12 +24,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// TODO move addresses to config
-	rr := schedule.NewRoundRobin([]gcounter.GCounter{
-		gcounter.NewHttp("http://localhost:8000"),
-		gcounter.NewHttp("http://localhost:8001"),
-		gcounter.NewHttp("http://localhost:8002"),
-	})
+	const host = "http://localhost:"
+	var gcounters []gcounter.GCounter
+	for port := loaderConfig.StartPort; port <= loaderConfig.EndPort; port++ {
+		gcounters = append(gcounters, gcounter.NewHttp(host+strconv.Itoa(port)))
+	}
+
+	rr := schedule.NewRoundRobin(gcounters)
 	// TODO move all logic from main to don't repeat in E2E test
 	l := loader.NewLoader(loaderConfig, rr)
 	responseSeries, err := l.Load()
