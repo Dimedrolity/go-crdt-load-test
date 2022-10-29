@@ -9,12 +9,11 @@ import (
 )
 
 type Loader struct {
-	config    Config
-	counter   gcounter.GCounter
+	config    *Config
 	scheduler schedule.Scheduler[gcounter.GCounter]
 }
 
-func NewLoader(config Config, scheduler schedule.Scheduler[gcounter.GCounter]) *Loader {
+func NewLoader(config *Config, scheduler schedule.Scheduler[gcounter.GCounter]) *Loader {
 	return &Loader{
 		config:    config,
 		scheduler: scheduler,
