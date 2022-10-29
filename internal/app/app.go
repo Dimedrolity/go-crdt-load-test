@@ -25,19 +25,19 @@ func Run(config *loader.Config) error {
 		return err
 	}
 
-	err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf("report-%d-%d.txt", config.CountsCount, config.IncsPerCountCall))
+	err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf("report-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
 	if err != nil {
 		return err
 	}
 
 	incStats := statistic.CalcIncStats(responseSeries)
-	err = report.WriteStatsToFile(incStats, fmt.Sprintf("inc-%d-%d.txt", config.CountsCount, config.IncsPerCountCall))
+	err = report.WriteStatsToFile(incStats, fmt.Sprintf("inc-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
 	if err != nil {
 		return err
 	}
 
 	countStats := statistic.CalcCountStats(responseSeries)
-	err = report.WriteStatsToFile(countStats, fmt.Sprintf("count-%d-%d.txt", config.CountsCount, config.IncsPerCountCall))
+	err = report.WriteStatsToFile(countStats, fmt.Sprintf("count-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
 	if err != nil {
 		return err
 	}
