@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go-crdt-load-test/gcounter"
 	"go-crdt-load-test/loader"
 	"go-crdt-load-test/report"
@@ -35,19 +36,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = report.WriteSeriesToFile(responseSeries, "report.txt")
+	err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf("report-%d-%d.txt", loaderConfig.CountsCount, loaderConfig.IncsPerCountCall))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	incStats := statistic.CalcIncStats(responseSeries)
-	err = report.WriteStatsToFile(incStats, "inc.txt")
+	err = report.WriteStatsToFile(incStats, fmt.Sprintf("inc-%d-%d.txt", loaderConfig.CountsCount, loaderConfig.IncsPerCountCall))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	countStats := statistic.CalcCountStats(responseSeries)
-	err = report.WriteStatsToFile(countStats, "count.txt")
+	err = report.WriteStatsToFile(countStats, fmt.Sprintf("count-%d-%d.txt", loaderConfig.CountsCount, loaderConfig.IncsPerCountCall))
 	if err != nil {
 		log.Fatal(err)
 	}

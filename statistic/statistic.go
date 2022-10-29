@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// TODO work with slice of time.Duration instead of ResponseSeries.
+// TODO use lib https://github.com/montanaflynn/stats, don't create own.
 
 func Mean(series report.ResponseSeries) time.Duration {
 	var sum int64
