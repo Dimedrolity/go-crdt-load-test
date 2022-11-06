@@ -20,33 +20,39 @@ func Run(config *loader.Config) error {
 
 	rr := schedule.NewRoundRobin(gcounters)
 
-	start := config.IncsPerCountCall[0]
-	stop := config.IncsPerCountCall[1]
-	step := config.IncsPerCountCall[2]
+	incStart := config.IncsPerCountCall[0]
+	incStop := config.IncsPerCountCall[1]
+	incStep := config.IncsPerCountCall[2]
 
-	for incsCount := start; incsCount <= stop; incsCount += step {
-		l := loader.NewLoader(config.CountsCount, incsCount, rr)
-		responseSeries, err := l.Load()
-		if err != nil {
-			return err
-		}
+	countStart := config.CountsCount[0]
+	countStop := config.CountsCount[1]
+	countStep := config.CountsCount[2]
 
-		const dirName = "experiments/"
-		err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf(dirName+"report-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
-		if err != nil {
-			return err
-		}
+	for countsCount := countStart; countsCount <= countStop; countsCount += countStep {
+		for incsCount := incStart; incsCount <= incStop; incsCount += incStep {
+			l := loader.NewLoader(countsCount, incsCount, rr)
+			responseSeries, err := l.Load()
+			if err != nil {
+				return err
+			}
 
-		incStats := statistic.CalcIncStats(responseSeries)
-		err = report.WriteStatsToFile(incStats, fmt.Sprintf(dirName+"inc-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
-		if err != nil {
-			return err
-		}
+			const dirName = "experiments/"
+			err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf(dirName+"report-%d-%d-%d.txt", len(gcounters), countsCount, incsCount))
+			if err != nil {
+				return err
+			}
 
-		countStats := statistic.CalcCountStats(responseSeries)
-		err = report.WriteStatsToFile(countStats, fmt.Sprintf(dirName+"count-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
-		if err != nil {
-			return err
+			incStats := statistic.CalcIncStats(responseSeries)
+			err = report.WriteStatsToFile(incStats, fmt.Sprintf(dirName+"inc-%d-%d-%d.txt", len(gcounters), countsCount, incsCount))
+			if err != nil {
+				return err
+			}
+
+			countStats := statistic.CalcCountStats(responseSeries)
+			err = report.WriteStatsToFile(countStats, fmt.Sprintf(dirName+"count-%d-%d-%d.txt", len(gcounters), countsCount, incsCount))
+			if err != nil {
+				return err
+			}
 		}
 	}
 

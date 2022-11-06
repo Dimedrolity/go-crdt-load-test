@@ -6,9 +6,10 @@ package loader
 // CountsCount is a total Count calls count.
 // (IncsPerCountCall+1)*CountsCount is a total requests count.
 type Config struct {
-	CountsCount int `yaml:"counts_count"`
 	// [start, stop, step]
+	CountsCount      [3]int `yaml:"counts_count"`
 	IncsPerCountCall [3]int `yaml:"incs_per_count_call"`
-	StartPort        int    `yaml:"start_port"`
-	EndPort          int    `yaml:"end_port"`
+
+	StartPort int `yaml:"start_port"`
+	EndPort   int `yaml:"end_port"`
 }
