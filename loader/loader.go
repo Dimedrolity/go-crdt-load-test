@@ -9,22 +9,24 @@ import (
 )
 
 type Loader struct {
-	config    *Config
-	scheduler schedule.Scheduler[gcounter.GCounter]
+	countsCount      int
+	incsPerCountCall int
+	scheduler        schedule.Scheduler[gcounter.GCounter]
 }
 
-func NewLoader(config *Config, scheduler schedule.Scheduler[gcounter.GCounter]) *Loader {
+func NewLoader(countsCount int, incsPerCountCall int, scheduler schedule.Scheduler[gcounter.GCounter]) *Loader {
 	return &Loader{
-		config:    config,
-		scheduler: scheduler,
+		countsCount:      countsCount,
+		incsPerCountCall: incsPerCountCall,
+		scheduler:        scheduler,
 	}
 }
 
 func (l *Loader) Load() (report.ResponseSeries, error) {
 	var rep report.ResponseSeries
 
-	for i := 0; i < l.config.CountsCount; i++ {
-		for j := 0; j < l.config.IncsPerCountCall; j++ {
+	for i := 0; i < l.countsCount; i++ {
+		for j := 0; j < l.incsPerCountCall; j++ {
 			counter := l.scheduler.Next()
 
 			start := time.Now()

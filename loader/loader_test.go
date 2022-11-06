@@ -19,7 +19,7 @@ func TestLoad(t *testing.T) {
 	// (9+1)*10 = 100 is a total requests count.
 	loaderConfig := &loader.Config{
 		CountsCount:      10,
-		IncsPerCountCall: 9,
+		IncsPerCountCall: [3]int{9, 9, 1},
 		StartPort:        8000,
 		EndPort:          8002,
 	}

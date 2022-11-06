@@ -19,27 +19,34 @@ func Run(config *loader.Config) error {
 	}
 
 	rr := schedule.NewRoundRobin(gcounters)
-	l := loader.NewLoader(config, rr)
-	responseSeries, err := l.Load()
-	if err != nil {
-		return err
-	}
 
-	err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf("report-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
-	if err != nil {
-		return err
-	}
+	start := config.IncsPerCountCall[0]
+	stop := config.IncsPerCountCall[1]
+	step := config.IncsPerCountCall[2]
 
-	incStats := statistic.CalcIncStats(responseSeries)
-	err = report.WriteStatsToFile(incStats, fmt.Sprintf("inc-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
-	if err != nil {
-		return err
-	}
+	for incsCount := start; incsCount <= stop; incsCount += step {
+		l := loader.NewLoader(config.CountsCount, incsCount, rr)
+		responseSeries, err := l.Load()
+		if err != nil {
+			return err
+		}
 
-	countStats := statistic.CalcCountStats(responseSeries)
-	err = report.WriteStatsToFile(countStats, fmt.Sprintf("count-%d-%d-%d.txt", len(gcounters), config.CountsCount, config.IncsPerCountCall))
-	if err != nil {
-		return err
+		err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf("report-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
+		if err != nil {
+			return err
+		}
+
+		incStats := statistic.CalcIncStats(responseSeries)
+		err = report.WriteStatsToFile(incStats, fmt.Sprintf("inc-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
+		if err != nil {
+			return err
+		}
+
+		countStats := statistic.CalcCountStats(responseSeries)
+		err = report.WriteStatsToFile(countStats, fmt.Sprintf("count-%d-%d-%d.txt", len(gcounters), config.CountsCount, incsCount))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
