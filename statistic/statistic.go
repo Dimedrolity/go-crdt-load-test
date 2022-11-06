@@ -55,6 +55,7 @@ func CalcIncStats(series report.ResponseSeries) *report.StatisticReport {
 
 	return &report.StatisticReport{
 		Operation: report.OperationInc,
+		Count:     len(incs),
 		Mean:      mean,
 		P25:       p25,
 		Median:    median,
@@ -71,6 +72,7 @@ func CalcCountStats(series report.ResponseSeries) *report.StatisticReport {
 
 	return &report.StatisticReport{
 		Operation: report.OperationCount,
+		Count:     len(counts),
 		Mean:      mean,
 		P25:       p25,
 		Median:    median,

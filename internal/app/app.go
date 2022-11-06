@@ -28,15 +28,21 @@ func Run(config *loader.Config) error {
 	countStop := config.CountsCount[1]
 	countStep := config.CountsCount[2]
 
-	for countsCount := countStart; countsCount <= countStop; countsCount += countStep {
-		for incsCount := incStart; incsCount <= incStop; incsCount += incStep {
+	const dirName = "experiments/"
+
+	csv, err := report.NewCsvWriter(fmt.Sprintf(dirName+"counts-%d-%v-%v", len(gcounters), config.CountsCount, config.IncsPerCountCall))
+	if err != nil {
+		return err
+	}
+
+	for countsCount := countStart; countsCount <= countStop; countsCount *= countStep {
+		for incsCount := incStart; incsCount <= incStop; incsCount *= incStep {
 			l := loader.NewLoader(countsCount, incsCount, rr)
 			responseSeries, err := l.Load()
 			if err != nil {
 				return err
 			}
 
-			const dirName = "experiments/"
 			err = report.WriteSeriesToFile(responseSeries, fmt.Sprintf(dirName+"report-%d-%d-%d.txt", len(gcounters), countsCount, incsCount))
 			if err != nil {
 				return err
@@ -50,6 +56,11 @@ func Run(config *loader.Config) error {
 
 			countStats := statistic.CalcCountStats(responseSeries)
 			err = report.WriteStatsToFile(countStats, fmt.Sprintf(dirName+"count-%d-%d-%d.txt", len(gcounters), countsCount, incsCount))
+			if err != nil {
+				return err
+			}
+
+			err = csv.WriteStatsToCsv(countStats, countsCount, incsCount)
 			if err != nil {
 				return err
 			}

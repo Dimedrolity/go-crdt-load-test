@@ -8,6 +8,7 @@ import (
 
 type StatisticReport struct {
 	Operation Operation
+	Count     int
 	Mean      time.Duration
 	P25       time.Duration
 	Median    time.Duration
