@@ -1,5 +1,0 @@
-Operation: COUNT
-Mean: 7513
-P25: 2518
-Median: 3005
-P75: 3309
